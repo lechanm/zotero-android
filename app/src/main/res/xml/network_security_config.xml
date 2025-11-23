@@ -5,6 +5,7 @@
         <domain includeSubdomains="true">home.arpa</domain>
         <domain includeSubdomains="true">local</domain>
         <domain includeSubdomains="true">www.zotero.org</domain>
+        <domain includeSubdomains="true">ts.net</domain>
     </domain-config>
     <base-config>
         <trust-anchors>
