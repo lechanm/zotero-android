@@ -400,7 +400,7 @@ internal class SettingsAccountViewModel @Inject constructor(
             val hostComponentsWithPort = sessionStorage.url.split(":")
             val hostComponentsWithSlashes = hostComponentsWithPort.firstOrNull()?.split("/")
             val host = hostComponentsWithSlashes?.firstOrNull()
-            if (host != null && (host.endsWith("local") || host.endsWith("home.arpa"))) {
+            if (host != null && (host.endsWith("local") || host.endsWith("home.arpa") || host.endsWith("ts.net"))) {
                 return true
             }
         } catch (e: Exception) {
