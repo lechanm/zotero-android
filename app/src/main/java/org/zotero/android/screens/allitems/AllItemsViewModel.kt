@@ -11,8 +11,11 @@ import androidx.core.net.toFile
 import androidx.core.net.toUri
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.PersistentSet
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.collections.immutable.toPersistentSet
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -67,8 +70,8 @@ import org.zotero.android.screens.allitems.data.ItemsFilter
 import org.zotero.android.screens.allitems.processor.AllItemsProcessor
 import org.zotero.android.screens.allitems.processor.AllItemsProcessorInterface
 import org.zotero.android.screens.citation.singlecitation.data.SingleCitationArgs
-import org.zotero.android.screens.citbibexport.data.CitBibExportArgs
 import org.zotero.android.screens.citation.singlecitation.locatorsList
+import org.zotero.android.screens.citbibexport.data.CitBibExportArgs
 import org.zotero.android.screens.collectionpicker.data.CollectionPickerArgs
 import org.zotero.android.screens.collectionpicker.data.CollectionPickerMode
 import org.zotero.android.screens.collectionpicker.data.CollectionPickerMultiResult
@@ -150,6 +153,7 @@ internal class AllItemsViewModel @Inject constructor(
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEvent(saveNoteAction: SaveNoteAction) {
+        println()
         if (saveNoteAction.isFromDashboard) {
             viewModelScope.launch {
                 saveNote(saveNoteAction.text, saveNoteAction.tags, saveNoteAction.key)
@@ -487,9 +491,10 @@ internal class AllItemsViewModel @Inject constructor(
     }
 
     private fun showNoteCreation(title: AddOrEditNoteArgs.TitleData?, libraryId: LibraryIdentifier) {
+        val key = KeyGenerator.newKey()
         val args = AddOrEditNoteArgs(
             title = title,
-            key = KeyGenerator.newKey(),
+            key = key,
             libraryId = libraryId,
             readOnly = false,
             isFromDashboard = true,
@@ -653,13 +658,13 @@ internal class AllItemsViewModel @Inject constructor(
         if (filter is ItemsFilter.tags) {
             updateState {
                 copy(
-                    filters = viewState.filters.filter { it !is ItemsFilter.tags }
+                    filters = viewState.filters.filter { it !is ItemsFilter.tags }.toPersistentList()
                 )
             }
         }
         updateState {
             copy(
-                filters = viewState.filters + filter
+                filters = (viewState.filters + filter).toPersistentList()
             )
         }
         EventBus.getDefault().post(UpdateFiltersEvent(viewState.filters))
@@ -673,7 +678,7 @@ internal class AllItemsViewModel @Inject constructor(
         }
         updateState {
             copy(
-                filters = viewState.filters - filter
+                filters = (viewState.filters - filter).toPersistentList()
             )
         }
         EventBus.getDefault().post(UpdateFiltersEvent(viewState.filters))
@@ -1249,7 +1254,7 @@ internal data class AllItemsViewState(
     val shouldShowAddBottomSheet: Boolean = false,
     val searchTerm: String? = null,
     val isRefreshing: Boolean = false,
-    val filters: List<ItemsFilter> = emptyList(),
+    val filters: PersistentList<ItemsFilter> = persistentListOf(),
     val isCollectionTrash: Boolean = false,
     val isCollectionACollection: Boolean = false,
     val collectionName: String = "",
