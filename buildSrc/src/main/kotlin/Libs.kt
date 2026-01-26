@@ -2,7 +2,7 @@ object Libs {
 
     const val androidJUnitRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-    const val nutrient = "io.nutrient:nutrient:10.5.0"
+    const val nutrient = "com.pspdfkit:pspdfkit:2024.4.0"
     const val googleServices = "com.google.gms:google-services:4.4.3"
     const val realmGradlePlugin = "io.realm:realm-gradle-plugin:10.19.0"
     const val materialDesign = "com.google.android.material:material:1.12.0"
@@ -139,9 +139,6 @@ object Libs {
 
     }
     object Commons {
-        const val io = "commons-io:commons-io:2.20.0"
-        const val codec = "commons-codec:commons-codec:1.19.0"
-        const val validator = "commons-validator:commons-validator:1.10.0"
-        const val text = "org.apache.commons:commons-text:1.14.0"
+        const val text = "org.apache.commons:commons-text:1.3"
     }
 }
