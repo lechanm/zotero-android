@@ -9,6 +9,7 @@ import org.zotero.android.pdf.data.PDFSettings
 import org.zotero.android.screens.allitems.data.ItemsSortType
 import org.zotero.android.screens.citbibexport.data.CitBibExportOutputMethod
 import org.zotero.android.screens.citbibexport.data.CitBibExportOutputMode
+import org.zotero.android.screens.htmlepub.settings.data.HtmlEpubSettings
 import org.zotero.android.screens.itemdetails.data.ItemDetailCreator
 import org.zotero.android.webdav.data.WebDavScheme
 import javax.inject.Inject
@@ -21,6 +22,7 @@ open class Defaults @Inject constructor(
 ) {
     private val sharedPrefsFile = "ZoteroPrefs"
     private val userId = "userId"
+    private val sessionId = "sessionId"
     private val name = "name"
     private val username = "username"
     private val displayName = "displayName"
@@ -51,6 +53,7 @@ open class Defaults @Inject constructor(
     private val exportStyleId = "exportStyleId"
     private val exportLocaleId = "exportLocaleId"
     private val quickCopyAsHtml = "quickCopyAsHtml"
+    private val htmlEpubSettings = "htmlEpubSettings"
 
     private val exportOutputMode = "exportOutputMode"
     private val exportOutputMethod = "exportOutputMethod"
@@ -64,6 +67,7 @@ open class Defaults @Inject constructor(
     private val lastCitationProcCommitHash = "lastCitationProcCommitHash"
     private val lastUtilitiesCommitHash = "lastUtilitiesCommitHash"
     private val lastCslLocalesCommitHash = "lastCslLocalesCommitHash"
+    private val lastHtmlEpubReaderCommitHash = "lastHtmlEpubReaderCommitHash"
 
     private val isWebDavEnabled = "isWebDavEnabled"
     private val webDavVerified = "webDavVerified"
@@ -153,6 +157,14 @@ open class Defaults @Inject constructor(
 
     fun setUserId(str: Long) {
         sharedPreferences.edit { putLong(userId, str) }
+    }
+
+    fun setSessionId(str: String?) {
+        sharedPreferences.edit { putString(sessionId, str) }
+    }
+
+    fun getSessionId(): String? {
+        return sharedPreferences.getString(sessionId, null)
     }
 
     fun setName(str: String) {
@@ -515,10 +527,34 @@ open class Defaults @Inject constructor(
         sharedPreferences.edit { putString(this@Defaults.exportOutputMode, json) }
     }
 
+    fun getLastHtmlEpubReaderCommitHash(): String {
+        return sharedPreferences.getString(lastHtmlEpubReaderCommitHash, "") ?: ""
+    }
+
+    fun setLastHtmlEpubReaderCommitHash(newValue: String) {
+        sharedPreferences.edit { putString(lastHtmlEpubReaderCommitHash, newValue) }
+    }
+
+    fun getHtmlEpubSettings(): HtmlEpubSettings {
+        val json: String = sharedPreferences.getString(
+            this.htmlEpubSettings,
+            null
+        ) ?: return HtmlEpubSettings.default()
+        return dataMarshaller.unmarshal(json)
+    }
+
+    fun setHtmlEpubSettings(
+        pdfSettings: HtmlEpubSettings,
+    ) {
+        val json = dataMarshaller.marshal(pdfSettings)
+        sharedPreferences.edit { putString(this@Defaults.htmlEpubSettings, json) }
+    }
+
     fun reset() {
         setUsername("")
         setDisplayName("")
         setUserId(0L)
+        setSessionId(null)
         setShowSubcollectionItems(false)
         setApiToken(null)
         setItemsSortType(ItemsSortType.default)
